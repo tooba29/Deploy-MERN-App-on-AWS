@@ -1,32 +1,20 @@
-# Use the official Node.js image as the base
-FROM node:latest as build
+# Use an official Node.js runtime as the base image
+FROM node:14
 
 # Set the working directory inside the container
-WORKDIR /app
+WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json (if using npm)
+# Copy the package.json and package-lock.json files to the container
 COPY package*.json ./
 
-# Install dependencies
+# Install the dependencies
 RUN npm install
 
-# Copy the rest of the app's source code
-COPY . .
+# Copy the client source code to the container
+COPY src ./src
 
-# Change working directory to client/src
-WORKDIR /app/client/src
+# Expose the port on which the client will be running (assuming it's 3000)
+EXPOSE 3000
 
-# Build the app
-RUN npm run build
-
-# Use NGINX to serve the built app
-FROM nginx:latest
-
-# Copy the built app from the previous stage
-COPY --from=build /app/client/build /usr/share/nginx/html
-
-# Expose the default NGINX port
-EXPOSE 80
-
-# Start NGINX server
-CMD ["nginx", "-g", "daemon off;"]
+# Set the command to run when the container starts
+CMD [ "npm", "start" ]
