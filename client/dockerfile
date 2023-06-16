@@ -1,5 +1,5 @@
 # Use the official Node.js image as the base
-FROM node:latest
+FROM node:latest as build
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -16,5 +16,14 @@ COPY . .
 # Build the app
 RUN npm run build
 
-# Set the command to start the app
-CMD ["npm", "start"]
+# Use NGINX to serve the built app
+FROM nginx:latest
+
+# Copy the built app from the previous stage
+COPY --from=build /app/build /usr/share/nginx/html
+
+# Expose the default NGINX port
+EXPOSE 80
+
+# Start NGINX server
+CMD ["nginx", "-g", "daemon off;"]
