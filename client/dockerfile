@@ -13,6 +13,9 @@ RUN npm install
 # Copy the rest of the app's source code
 COPY . .
 
+# Change working directory to client/src
+WORKDIR /app/client/src
+
 # Build the app
 RUN npm run build
 
@@ -20,7 +23,7 @@ RUN npm run build
 FROM nginx:latest
 
 # Copy the built app from the previous stage
-COPY --from=build /app/build /usr/share/nginx/html
+COPY --from=build /app/client/build /usr/share/nginx/html
 
 # Expose the default NGINX port
 EXPOSE 80
